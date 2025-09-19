@@ -71,7 +71,8 @@ export const handleSimplify: RequestHandler = async (req, res) => {
       };
 
       const resp1 = await axios.post(url, simplePrompt, { timeout: 20000 });
-      explanation = parseModelText(resp1.data) || "";
+      const modelText = parseModelText(resp1.data) || "";
+      explanation = modelText;
 
       // 2) Generate quiz questions (JSON)
       // Stronger prompt: require JSON only, unique options, plausible distractors
