@@ -106,4 +106,10 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Flashcard accent and animation utilities */
+  .flashcard-tilt {
+    transition: transform 300ms cubic-bezier(.2,.9,.2,1), box-shadow 300ms;
+    transform-origin: center;
+  }
 }
