@@ -46,14 +46,21 @@ export function FeynmanCard({ item }: { item: FeynmanItem }) {
       const text = m.textContent || "";
       const word = text.replace(/[^A-Za-z0-9\-']/g, "");
       const key = word.toLowerCase();
-      const btn = document.createElement("button");
-      btn.className = "px-1 rounded bg-amber-200/80 dark:bg-amber-400/30 text-amber-900 dark:text-amber-100 hover:underline focus:outline-none focus:ring-2 focus:ring-amber-300";
-      btn.setAttribute("data-word", key);
-      btn.innerHTML = text;
-      btn.onclick = () => {
-        setOpen((s) => (s === key ? null : key));
+      const a = document.createElement("a");
+      a.className = "px-1 rounded bg-amber-200/80 dark:bg-amber-400/30 text-amber-900 dark:text-amber-100 hover:underline focus:outline-none focus:ring-2 focus:ring-amber-300";
+      a.setAttribute("data-word", key);
+      const wikiText = String(text).trim();
+      const wikiSlug = wikiText.replace(/\s+/g, "_");
+      a.href = `https://en.wikipedia.org/wiki/${encodeURIComponent(wikiSlug)}`;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.title = `Open ${wikiText} on Wikipedia`;
+      a.innerHTML = text;
+      // prevent card click handlers from firing when clicking the link
+      a.onclick = (e: MouseEvent) => {
+        e.stopPropagation();
       };
-      m.parentNode?.replaceChild(btn, m);
+      m.parentNode?.replaceChild(a, m);
     }
     return div.innerHTML;
   }, [item.highlightedHtml]);
