@@ -180,8 +180,8 @@ Remember: JSON only. Example output schema:
       quiz.push(...heuristicQuestions(text));
     }
 
-    // return explanation and quiz
-    res.json({ explanation, quiz: quiz.slice(0, 10) });
+    // return explanation and quiz and modelText for debugging/fallback
+    res.json({ explanation, modelText: explanation, quiz: quiz.slice(0, 10) });
   } catch (err: any) {
     console.error(
       "Gemini API error:",
