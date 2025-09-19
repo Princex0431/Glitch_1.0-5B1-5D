@@ -16,6 +16,7 @@ import {
   highlightComplexWords,
 } from "@/lib/highlightWords";
 import { FeynmanCard, FeynmanItem } from "@/components/FeynmanCard";
+import Quiz from "@/components/Quiz";
 import { isSupabaseEnabled, supabase } from "@/services/supabase";
 import { Loader2, Sparkles } from "lucide-react";
 
