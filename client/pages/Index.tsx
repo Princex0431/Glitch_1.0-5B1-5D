@@ -132,22 +132,22 @@ export default function Index() {
 
   const hero = useMemo(
     () => (
-      <div className="text-center space-y-4">
-        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1 text-xs text-muted-foreground">
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center space-y-4">
+        <motion.div initial={{ scale: 0.98 }} animate={{ scale: 1 }} transition={{ duration: 0.6 }} className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1 text-xs text-muted-foreground">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
           Learn faster with the Feynman Technique
-        </div>
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">
+        </motion.div>
+        <motion.h1 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.6 }} className="text-4xl sm:text-5xl font-extrabold tracking-tight">
           Explain anything in simple words
-        </h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Paste a concept. We rewrite it in plain language and highlight tricky
-          words. Save and revisit your learning history anywhere.
-        </p>
-      </div>
+        </motion.h1>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-muted-foreground max-w-2xl mx-auto">
+          Paste a concept. We rewrite it in plain language and highlight tricky words. Save and revisit your learning history anywhere.
+        </motion.p>
+      </motion.div>
     ),
     [],
   );
+
 
   return (
     <div className="space-y-10">
