@@ -103,6 +103,7 @@ export default function Index() {
           concept: item.concept,
           explanation: item.explanation,
           highlightedHtml: item.highlightedHtml,
+          quiz: item.quiz ?? null,
           createdAt: item.createdAt,
         });
         if (error) saveLocal(item);
