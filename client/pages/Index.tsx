@@ -76,6 +76,8 @@ export default function Index() {
       try {
         const { data } = await api.post("/simplify", { text: concept });
         explanation = String(data?.explanation ?? "");
+        // if server returned quiz, capture it
+        var quizFromServer: any[] | undefined = Array.isArray(data?.quiz) ? data.quiz : undefined;
       } catch {
         explanation = basicSimplify(concept);
       }
@@ -90,6 +92,7 @@ export default function Index() {
         explanation: explanation || concept,
         highlightedHtml,
         createdAt: new Date().toISOString(),
+        quiz: quizFromServer,
       };
       setResult(item);
       setRecent((prev) => [item, ...prev].slice(0, 6));
