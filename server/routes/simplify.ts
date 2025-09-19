@@ -32,17 +32,25 @@ function heuristicQuestions(text: string) {
   );
 
   for (let i = 0; i < 5; i++) {
-    const qText = sentences[i] ? `In your own words, what does this mean: \"${sentences[i].slice(0, 120)}\"` : `What is the main idea of the text?`;
+    const qText = sentences[i]
+      ? `In your own words, what does this mean: \"${sentences[i].slice(0, 120)}\"`
+      : `What is the main idea of the text?`;
     const key = keywords[i] || keywords[0] || "concept";
     const options = [key, key + "s", "an idea", "a detail"].slice(0, 4);
-    questions.push({ question: qText, options, answerIndex: 0, explanation: "" });
+    questions.push({
+      question: qText,
+      options,
+      answerIndex: 0,
+      explanation: "",
+    });
   }
   return questions;
 }
 
 export const handleSimplify: RequestHandler = async (req, res) => {
   const text = String(req.body?.text ?? "").trim();
-  if (!text) return res.status(400).json({ error: "Missing text in request body" });
+  if (!text)
+    return res.status(400).json({ error: "Missing text in request body" });
 
   const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
 
@@ -99,7 +107,11 @@ Remember: JSON only. Example output schema:
         quizText = parseModelText(resp2.data) || "";
 
         // clean code fences
-        const maybe = quizText.trim().replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+        const maybe = quizText
+          .trim()
+          .replace(/^```json\s*/i, "")
+          .replace(/```$/, "")
+          .trim();
         try {
           parsedQuiz = JSON.parse(maybe);
         } catch (err) {
@@ -107,7 +119,11 @@ Remember: JSON only. Example output schema:
         }
 
         // validate structure: quiz array and each question has 4 unique options
-        if (parsedQuiz && Array.isArray(parsedQuiz.quiz) && parsedQuiz.quiz.length > 0) {
+        if (
+          parsedQuiz &&
+          Array.isArray(parsedQuiz.quiz) &&
+          parsedQuiz.quiz.length > 0
+        ) {
           let ok = true;
           for (const q of parsedQuiz.quiz) {
             if (!q || typeof q.question !== "string") ok = false;
@@ -133,7 +149,12 @@ Remember: JSON only. Example output schema:
           if (q && q.question && Array.isArray(q.options)) {
             // coerce to expected shape and cap options to 4
             const opts = q.options.slice(0, 4).map((o: any) => String(o));
-            quiz.push({ question: String(q.question), options: opts, answerIndex: Number(q.answerIndex ?? 0), explanation: String(q.explanation ?? "") });
+            quiz.push({
+              question: String(q.question),
+              options: opts,
+              answerIndex: Number(q.answerIndex ?? 0),
+              explanation: String(q.explanation ?? ""),
+            });
           }
         }
       } else {
@@ -146,7 +167,11 @@ Remember: JSON only. Example output schema:
 
     if (!explanation) {
       // fallback to server-side heuristics if Gemini not available or failed
-      explanation = text.split(/(?<=[.!?])\s+/).slice(0, 3).join(" ") || text;
+      explanation =
+        text
+          .split(/(?<=[.!?])\s+/)
+          .slice(0, 3)
+          .join(" ") || text;
     }
 
     if (quiz.length === 0) {
@@ -157,9 +182,16 @@ Remember: JSON only. Example output schema:
     // return explanation and quiz
     res.json({ explanation, quiz: quiz.slice(0, 10) });
   } catch (err: any) {
-    console.error("Gemini API error:", err?.response?.data ?? err.message ?? err);
+    console.error(
+      "Gemini API error:",
+      err?.response?.data ?? err.message ?? err,
+    );
     // fallback: return heuristic simplification and questions
-    const explanation = text.split(/(?<=[.!?])\s+/).slice(0, 3).join(" ") || text;
+    const explanation =
+      text
+        .split(/(?<=[.!?])\s+/)
+        .slice(0, 3)
+        .join(" ") || text;
     const quiz = heuristicQuestions(text);
     res.json({ explanation, quiz });
   }

@@ -5,7 +5,12 @@ export default function Quiz({
   quiz,
   conceptId,
 }: {
-  quiz: Array<{ question: string; options: string[]; answerIndex?: number; explanation?: string }>;
+  quiz: Array<{
+    question: string;
+    options: string[];
+    answerIndex?: number;
+    explanation?: string;
+  }>;
   conceptId?: string;
 }) {
   const [answers, setAnswers] = useState<Record<number, number | null>>({});
@@ -43,7 +48,10 @@ export default function Quiz({
           created_at: new Date().toISOString(),
         });
         // update concept last_attempted_at
-        await supabase.from("concepts").update({ last_attempted_at: new Date().toISOString() }).eq("id", conceptId);
+        await supabase
+          .from("concepts")
+          .update({ last_attempted_at: new Date().toISOString() })
+          .eq("id", conceptId);
       } catch (err) {
         console.debug("Failed to save attempt", err);
       }
@@ -56,7 +64,11 @@ export default function Quiz({
         const list = JSON.parse(raw) as any[];
         const idx = list.findIndex((x) => x.id === conceptId);
         if (idx >= 0) {
-          list[idx].lastAttempt = { answers, score: s, at: new Date().toISOString() };
+          list[idx].lastAttempt = {
+            answers,
+            score: s,
+            at: new Date().toISOString(),
+          };
           localStorage.setItem("feynman_history", JSON.stringify(list));
         }
       }
@@ -66,11 +78,15 @@ export default function Quiz({
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Quiz</h3>
-      <p className="text-sm text-muted-foreground">Test your understanding with {quiz.length} quick questions.</p>
+      <p className="text-sm text-muted-foreground">
+        Test your understanding with {quiz.length} quick questions.
+      </p>
       <div className="space-y-6">
         {quiz.map((q, i) => (
           <div key={i} className="p-4 border border-border rounded-md">
-            <div className="font-medium mb-2">{i + 1}. {q.question}</div>
+            <div className="font-medium mb-2">
+              {i + 1}. {q.question}
+            </div>
             <div className="grid grid-cols-1 gap-2">
               {q.options.map((opt, idx) => {
                 const sel = answers[i] === idx;
@@ -80,30 +96,56 @@ export default function Quiz({
                   <button
                     key={idx}
                     onClick={() => !submitted && handleSelect(i, idx)}
-                    className={`text-left p-3 rounded-md border ${sel ? 'border-primary bg-primary/10' : 'border-border'} ${showCorrect ? 'ring-2 ring-green-300' : ''}`}
+                    className={`text-left p-3 rounded-md border ${sel ? "border-primary bg-primary/10" : "border-border"} ${showCorrect ? "ring-2 ring-green-300" : ""}`}
                     disabled={submitted}
                   >
                     <div className="flex items-center justify-between">
                       <span>{opt}</span>
-                      {submitted && (correct ? <span className="text-xs text-green-600">Correct</span> : (sel ? <span className="text-xs text-red-600">Your answer</span> : null))}
+                      {submitted &&
+                        (correct ? (
+                          <span className="text-xs text-green-600">
+                            Correct
+                          </span>
+                        ) : sel ? (
+                          <span className="text-xs text-red-600">
+                            Your answer
+                          </span>
+                        ) : null)}
                     </div>
                   </button>
                 );
               })}
             </div>
             {submitted && q.explanation && (
-              <div className="mt-2 text-sm text-muted-foreground">Explanation: {q.explanation}</div>
+              <div className="mt-2 text-sm text-muted-foreground">
+                Explanation: {q.explanation}
+              </div>
             )}
           </div>
         ))}
       </div>
       <div className="flex items-center gap-3">
         {!submitted ? (
-          <button className="px-4 py-2 bg-primary text-white rounded" onClick={handleSubmit}>Submit</button>
+          <button
+            className="px-4 py-2 bg-primary text-white rounded"
+            onClick={handleSubmit}
+          >
+            Submit
+          </button>
         ) : (
           <>
-            <div className="text-sm">Score: {score()} / {quiz.length}</div>
-            <button className="px-3 py-1 border border-border rounded" onClick={() => { setSubmitted(false); setAnswers({}); }}>Retry</button>
+            <div className="text-sm">
+              Score: {score()} / {quiz.length}
+            </div>
+            <button
+              className="px-3 py-1 border border-border rounded"
+              onClick={() => {
+                setSubmitted(false);
+                setAnswers({});
+              }}
+            >
+              Retry
+            </button>
           </>
         )}
       </div>

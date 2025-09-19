@@ -78,7 +78,9 @@ export default function Index() {
         const { data } = await api.post("/simplify", { text: concept });
         explanation = String(data?.explanation ?? "");
         // if server returned quiz, capture it
-        var quizFromServer: any[] | undefined = Array.isArray(data?.quiz) ? data.quiz : undefined;
+        var quizFromServer: any[] | undefined = Array.isArray(data?.quiz)
+          ? data.quiz
+          : undefined;
       } catch {
         explanation = basicSimplify(concept);
       }

@@ -17,7 +17,12 @@ export interface FeynmanItem {
   explanation: string;
   highlightedHtml: string;
   createdAt: string;
-  quiz?: Array<{ question: string; options: string[]; answerIndex?: number; explanation?: string }>;
+  quiz?: Array<{
+    question: string;
+    options: string[];
+    answerIndex?: number;
+    explanation?: string;
+  }>;
 }
 
 export function FeynmanCard({ item }: { item: FeynmanItem }) {
