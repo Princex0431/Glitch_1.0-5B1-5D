@@ -35,7 +35,9 @@ export function FeynmanCard({ item }: { item: FeynmanItem }) {
       if (!mounted) return;
       setDefinitions(defs);
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [words]);
 
   const html = useMemo(() => {
@@ -47,7 +49,8 @@ export function FeynmanCard({ item }: { item: FeynmanItem }) {
       const word = text.replace(/[^A-Za-z0-9\-']/g, "");
       const key = word.toLowerCase();
       const a = document.createElement("a");
-      a.className = "px-1 rounded bg-amber-200/80 dark:bg-amber-400/30 text-amber-900 dark:text-amber-100 hover:underline focus:outline-none focus:ring-2 focus:ring-amber-300";
+      a.className =
+        "px-1 rounded bg-amber-200/80 dark:bg-amber-400/30 text-amber-900 dark:text-amber-100 hover:underline focus:outline-none focus:ring-2 focus:ring-amber-300";
       a.setAttribute("data-word", key);
       const wikiText = String(text).trim();
       const wikiSlug = wikiText.replace(/\s+/g, "_");
@@ -72,7 +75,9 @@ export function FeynmanCard({ item }: { item: FeynmanItem }) {
           <span className="truncate" title={item.concept}>
             {item.concept}
           </span>
-          <Badge variant="secondary">{new Date(item.createdAt).toLocaleString()}</Badge>
+          <Badge variant="secondary">
+            {new Date(item.createdAt).toLocaleString()}
+          </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="prose prose-sm dark:prose-invert max-w-none relative">
@@ -80,9 +85,16 @@ export function FeynmanCard({ item }: { item: FeynmanItem }) {
         {open && (
           <div className="absolute right-4 top-4 w-64 bg-card/90 border border-border p-3 rounded shadow-lg">
             <h4 className="font-semibold text-sm mb-1">{open}</h4>
-            <p className="text-sm text-muted-foreground">{definitions[open] || "Loading definition..."}</p>
+            <p className="text-sm text-muted-foreground">
+              {definitions[open] || "Loading definition..."}
+            </p>
             <div className="mt-2 flex justify-end">
-              <button className="text-xs text-primary underline" onClick={() => setOpen(null)}>Close</button>
+              <button
+                className="text-xs text-primary underline"
+                onClick={() => setOpen(null)}
+              >
+                Close
+              </button>
             </div>
           </div>
         )}

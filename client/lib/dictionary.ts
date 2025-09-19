@@ -1,4 +1,6 @@
-export async function fetchDefinitions(words: string[]): Promise<Record<string, string>> {
+export async function fetchDefinitions(
+  words: string[],
+): Promise<Record<string, string>> {
   if (!words || words.length === 0) return {};
   try {
     const res = await fetch(`/api/define`, {

@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
-export default function Flashcard({ front, back }: { front: React.ReactNode; back: React.ReactNode }) {
+export default function Flashcard({
+  front,
+  back,
+}: {
+  front: React.ReactNode;
+  back: React.ReactNode;
+}) {
   const [flipped, setFlipped] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -11,8 +17,11 @@ export default function Flashcard({ front, back }: { front: React.ReactNode; bac
       const rect = el.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
-      el.style.setProperty("--tx", (x / rect.width * 20).toFixed(2) + "deg");
-      el.style.setProperty("--ty", (y / rect.height * -10).toFixed(2) + "deg");
+      el.style.setProperty("--tx", ((x / rect.width) * 20).toFixed(2) + "deg");
+      el.style.setProperty(
+        "--ty",
+        ((y / rect.height) * -10).toFixed(2) + "deg",
+      );
       el.style.setProperty("--s", "1.03");
     };
     const leave = () => {
@@ -36,7 +45,9 @@ export default function Flashcard({ front, back }: { front: React.ReactNode; bac
       className={`relative w-full h-56 cursor-pointer perspective`}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setFlipped(s => !s); }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") setFlipped((s) => !s);
+      }}
     >
       <div
         className={`absolute inset-0 transition-transform duration-700 will-change-transform transform-style-preserve-3d ${flipped ? "rotate-y-180" : ""}`}
@@ -44,17 +55,25 @@ export default function Flashcard({ front, back }: { front: React.ReactNode; bac
           transform: `rotateY(${flipped ? 180 : 0}deg)`,
         }}
       >
-        <div className="absolute inset-0 backface-hidden rounded-xl shadow-2xl overflow-hidden bg-gradient-to-br from-primary/60 to-accent/40 p-6 flex flex-col justify-between" style={{ transform: "translateZ(30px) scale(var(--s,1)) rotateX(var(--ty,0deg)) rotateY(var(--tx,0deg))" }}>
-          <div className="text-white">
-            {front}
-          </div>
+        <div
+          className="absolute inset-0 backface-hidden rounded-xl shadow-2xl overflow-hidden bg-gradient-to-br from-primary/60 to-accent/40 p-6 flex flex-col justify-between"
+          style={{
+            transform:
+              "translateZ(30px) scale(var(--s,1)) rotateX(var(--ty,0deg)) rotateY(var(--tx,0deg))",
+          }}
+        >
+          <div className="text-white">{front}</div>
           <div className="text-sm text-white/80">Flip to see explanation</div>
         </div>
 
-        <div className="absolute inset-0 backface-hidden rounded-xl shadow-2xl overflow-hidden bg-white p-6 rotate-y-180" style={{ transform: "translateZ(30px) scale(var(--s,1)) rotateX(var(--ty,0deg)) rotateY(var(--tx,0deg))" }}>
-          <div className="text-slate-900">
-            {back}
-          </div>
+        <div
+          className="absolute inset-0 backface-hidden rounded-xl shadow-2xl overflow-hidden bg-white p-6 rotate-y-180"
+          style={{
+            transform:
+              "translateZ(30px) scale(var(--s,1)) rotateX(var(--ty,0deg)) rotateY(var(--tx,0deg))",
+          }}
+        >
+          <div className="text-slate-900">{back}</div>
           <div className="text-sm text-slate-500">Click to go back</div>
         </div>
       </div>

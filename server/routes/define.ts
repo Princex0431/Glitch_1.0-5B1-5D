@@ -10,10 +10,14 @@ export const handleDefine: RequestHandler = async (req, res) => {
     return [];
   })();
 
-  if (words.length === 0) return res.status(400).json({ error: "No word(s) provided" });
+  if (words.length === 0)
+    return res.status(400).json({ error: "No word(s) provided" });
 
   const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: "Server not configured with Google Gemini API key" });
+  if (!apiKey)
+    return res
+      .status(500)
+      .json({ error: "Server not configured with Google Gemini API key" });
 
   try {
     // Build a concise prompt that asks definitions for each word
@@ -43,11 +47,18 @@ export const handleDefine: RequestHandler = async (req, res) => {
     let parsed: Record<string, string> = {};
     try {
       // Some models may include backticks or code fences
-      const maybeJson = text.trim().replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+      const maybeJson = text
+        .trim()
+        .replace(/^```json\s*/i, "")
+        .replace(/```$/, "")
+        .trim();
       parsed = JSON.parse(maybeJson);
     } catch {
       // Fallback: attempt to extract lines like "word: definition"
-      const lines = text.split(/\n+/).map((l: string) => l.trim()).filter(Boolean);
+      const lines = text
+        .split(/\n+/)
+        .map((l: string) => l.trim())
+        .filter(Boolean);
       for (const line of lines) {
         const m = line.match(/^"?([^":]+)"?\s*[:\-]\s*(.+)$/);
         if (m) {
@@ -59,12 +70,16 @@ export const handleDefine: RequestHandler = async (req, res) => {
     // Ensure each requested word has a definition; if missing, set empty string
     const result: Record<string, string> = {};
     for (const w of words) {
-      result[w] = parsed[w] ?? parsed[w.toLowerCase()] ?? parsed[w.toUpperCase()] ?? "";
+      result[w] =
+        parsed[w] ?? parsed[w.toLowerCase()] ?? parsed[w.toUpperCase()] ?? "";
     }
 
     res.json({ definitions: result, raw: text });
   } catch (err: any) {
-    console.error("Define API error:", err?.response?.data ?? err.message ?? err);
+    console.error(
+      "Define API error:",
+      err?.response?.data ?? err.message ?? err,
+    );
     res.status(500).json({ error: "Failed to fetch definitions" });
   }
 };
