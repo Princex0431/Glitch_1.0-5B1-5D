@@ -82,7 +82,10 @@ export default function Index() {
         var quizFromServer: any[] | undefined = Array.isArray(data?.quiz)
           ? data.quiz
           : undefined;
-        if (!String(data?.explanation) && String(data?.modelText)) {
+        if (data?.ai_error) {
+          const { toast } = await import("@/hooks/use-toast");
+          toast({ title: "AI service warning", description: String(data.ai_error) });
+        } else if (!String(data?.explanation) && String(data?.modelText)) {
           // inform the user we're showing the raw model output
           const { toast } = await import("@/hooks/use-toast");
           toast({ title: "Using model output", description: "Showing model-provided simplification text." });
