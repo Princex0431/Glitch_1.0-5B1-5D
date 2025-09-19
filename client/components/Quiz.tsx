@@ -1,6 +1,13 @@
 import { useState } from "react";
+import { supabase, isSupabaseEnabled } from "@/services/supabase";
 
-export default function Quiz({ quiz }: { quiz: Array<{ question: string; options: string[]; answerIndex?: number; explanation?: string }> }) {
+export default function Quiz({
+  quiz,
+  conceptId,
+}: {
+  quiz: Array<{ question: string; options: string[]; answerIndex?: number; explanation?: string }>;
+  conceptId?: string;
+}) {
   const [answers, setAnswers] = useState<Record<number, number | null>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -17,6 +24,43 @@ export default function Quiz({ quiz }: { quiz: Array<{ question: string; options
       if (a != null && quiz[i].answerIndex === a) s++;
     }
     return s;
+  };
+
+  const handleSubmit = async () => {
+    setSubmitted(true);
+    const s = score();
+
+    // persist attempt to Supabase if available
+    if (isSupabaseEnabled && supabase && conceptId) {
+      try {
+        const userResp = await supabase.auth.getUser();
+        const userId = userResp?.data?.user?.id ?? null;
+        await supabase.from("attempts").insert({
+          concept_id: conceptId,
+          user_id: userId,
+          answers: answers,
+          score: s,
+          created_at: new Date().toISOString(),
+        });
+        // update concept last_attempted_at
+        await supabase.from("concepts").update({ last_attempted_at: new Date().toISOString() }).eq("id", conceptId);
+      } catch (err) {
+        console.debug("Failed to save attempt", err);
+      }
+    }
+
+    // also store in localStorage history to keep progress offline
+    try {
+      const raw = localStorage.getItem("feynman_history");
+      if (raw) {
+        const list = JSON.parse(raw) as any[];
+        const idx = list.findIndex((x) => x.id === conceptId);
+        if (idx >= 0) {
+          list[idx].lastAttempt = { answers, score: s, at: new Date().toISOString() };
+          localStorage.setItem("feynman_history", JSON.stringify(list));
+        }
+      }
+    } catch {}
   };
 
   return (
@@ -55,7 +99,7 @@ export default function Quiz({ quiz }: { quiz: Array<{ question: string; options
       </div>
       <div className="flex items-center gap-3">
         {!submitted ? (
-          <button className="px-4 py-2 bg-primary text-white rounded" onClick={() => setSubmitted(true)}>Submit</button>
+          <button className="px-4 py-2 bg-primary text-white rounded" onClick={handleSubmit}>Submit</button>
         ) : (
           <>
             <div className="text-sm">Score: {score()} / {quiz.length}</div>
