@@ -14,14 +14,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout><Index /></Layout>} />
-          <Route path="/history" element={<Layout><History /></Layout>} />
-          <Route path="/auth" element={<Layout><Auth /></Layout>} />
-          <Route path="*" element={<Layout><NotFound /></Layout>} />
-        </Routes>
-      </BrowserRouter>
+      <AppRoutes />
     </TooltipProvider>
   </QueryClientProvider>
 );
