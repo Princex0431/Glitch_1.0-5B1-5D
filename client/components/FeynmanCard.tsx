@@ -36,18 +36,16 @@ export function FeynmanCard({ item }: { item: FeynmanItem }) {
     return Array.from(set).slice(0, 12);
   }, [item.highlightedHtml]);
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      if (words.length === 0) return;
-      const defs = await fetchDefinitions(words);
-      if (!mounted) return;
-      setDefinitions(defs);
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [words]);
+  // Lazy-load definitions only when requested (reduce background network calls)
+  const loadDefinitions = async (keys: string[]) => {
+    if (!keys || keys.length === 0) return;
+    try {
+      const defs = await fetchDefinitions(keys);
+      setDefinitions((prev) => ({ ...prev, ...defs }));
+    } catch (e) {
+      // ignore
+    }
+  };
 
   const html = useMemo(() => {
     const div = document.createElement("div");
