@@ -37,6 +37,22 @@ export default function AppRoutes() {
           }
         />
         <Route
+          path="/about"
+          element={
+            <Layout>
+              <About />
+            </Layout>
+          }
+        />
+        <Route
+          path="/contact"
+          element={
+            <Layout>
+              <Contact />
+            </Layout>
+          }
+        />
+        <Route
           path="*"
           element={
             <Layout>
