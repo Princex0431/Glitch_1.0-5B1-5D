@@ -19,4 +19,14 @@ const App = () => (
   </QueryClientProvider>
 );
 
-createRoot(document.getElementById("root")!).render(<App />);
+(function mount() {
+  const container = document.getElementById("root");
+  if (!container) throw new Error("Root container not found");
+  const w = window as any;
+  let root = w.__REACT_ROOT;
+  if (!root) {
+    root = createRoot(container);
+    w.__REACT_ROOT = root;
+  }
+  root.render(<App />);
+})();
