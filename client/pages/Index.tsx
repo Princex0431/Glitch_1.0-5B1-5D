@@ -1,10 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { api } from "@/services/axios";
-import { basicSimplify, findComplexWords, highlightComplexWords } from "@/lib/highlightWords";
+import {
+  basicSimplify,
+  findComplexWords,
+  highlightComplexWords,
+} from "@/lib/highlightWords";
 import { FeynmanCard, FeynmanItem } from "@/components/FeynmanCard";
 import { isSupabaseEnabled, supabase } from "@/services/supabase";
 import { Loader2, Sparkles } from "lucide-react";
@@ -70,7 +80,10 @@ export default function Index() {
         explanation = basicSimplify(concept);
       }
       const complex = findComplexWords(explanation || concept);
-      const highlightedHtml = highlightComplexWords(explanation || concept, complex);
+      const highlightedHtml = highlightComplexWords(
+        explanation || concept,
+        complex,
+      );
       const item: FeynmanItem = {
         id: crypto.randomUUID(),
         concept,
@@ -109,7 +122,8 @@ export default function Index() {
           Explain anything in simple words
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Paste a concept. We rewrite it in plain language and highlight tricky words. Save and revisit your learning history anywhere.
+          Paste a concept. We rewrite it in plain language and highlight tricky
+          words. Save and revisit your learning history anywhere.
         </p>
       </div>
     ),
@@ -122,7 +136,10 @@ export default function Index() {
       <Card>
         <CardHeader>
           <CardTitle>Break it down</CardTitle>
-          <CardDescription>Paste a concept and get a simpler explanation with highlighted complex words.</CardDescription>
+          <CardDescription>
+            Paste a concept and get a simpler explanation with highlighted
+            complex words.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -134,10 +151,12 @@ export default function Index() {
             />
             <div className="flex items-center justify-between gap-3">
               <div className="text-xs text-muted-foreground">
-                Tip: Try pasting a dense paragraph from a paper. We'll simplify it.
+                Tip: Try pasting a dense paragraph from a paper. We'll simplify
+                it.
               </div>
               <Button type="submit" disabled={disabled}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Simplify
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Simplify
               </Button>
             </div>
           </form>
@@ -161,7 +180,9 @@ export default function Index() {
             <FeynmanCard key={r.id} item={r} />
           ))}
           {recent.length === 0 && (
-            <p className="text-muted-foreground">No history yet. Start by simplifying your first concept.</p>
+            <p className="text-muted-foreground">
+              No history yet. Start by simplifying your first concept.
+            </p>
           )}
         </div>
       </section>

@@ -14,8 +14,12 @@ export function FeynmanCard({ item }: { item: FeynmanItem }) {
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader>
         <CardTitle className="flex items-center justify-between gap-2">
-          <span className="truncate" title={item.concept}>{item.concept}</span>
-          <Badge variant="secondary">{new Date(item.createdAt).toLocaleString()}</Badge>
+          <span className="truncate" title={item.concept}>
+            {item.concept}
+          </span>
+          <Badge variant="secondary">
+            {new Date(item.createdAt).toLocaleString()}
+          </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="prose prose-sm dark:prose-invert max-w-none">

@@ -46,7 +46,9 @@ export default function HistoryPage() {
   }, []);
 
   const filtered = items.filter((i) =>
-    [i.concept, i.explanation].some((t) => t.toLowerCase().includes(q.toLowerCase())),
+    [i.concept, i.explanation].some((t) =>
+      t.toLowerCase().includes(q.toLowerCase()),
+    ),
   );
 
   return (
@@ -60,7 +62,9 @@ export default function HistoryPage() {
             onChange={(e) => setQ(e.target.value)}
             className="w-64"
           />
-          <Button variant="outline" onClick={() => setQ("")}>Clear</Button>
+          <Button variant="outline" onClick={() => setQ("")}>
+            Clear
+          </Button>
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -10,10 +10,38 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout><Index /></Layout>} />
-        <Route path="/history" element={<Layout><History /></Layout>} />
-        <Route path="/auth" element={<Layout><Auth /></Layout>} />
-        <Route path="*" element={<Layout><NotFound /></Layout>} />
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <Index />
+            </Layout>
+          }
+        />
+        <Route
+          path="/history"
+          element={
+            <Layout>
+              <History />
+            </Layout>
+          }
+        />
+        <Route
+          path="/auth"
+          element={
+            <Layout>
+              <Auth />
+            </Layout>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <Layout>
+              <NotFound />
+            </Layout>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
