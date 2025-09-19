@@ -170,6 +170,11 @@ export default function Index() {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Latest explanation</h2>
           <FeynmanCard item={result} />
+          {result.quiz && result.quiz.length > 0 && (
+            <div className="mt-4">
+              <Quiz quiz={result.quiz} />
+            </div>
+          )}
         </div>
       )}
 
