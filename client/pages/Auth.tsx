@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { supabase, isSupabaseEnabled } from "@/services/supabase";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FcGoogle } from "react-icons/fc";
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
