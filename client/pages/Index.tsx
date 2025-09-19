@@ -19,6 +19,7 @@ import { FeynmanCard, FeynmanItem } from "@/components/FeynmanCard";
 import Quiz from "@/components/Quiz";
 import { isSupabaseEnabled, supabase } from "@/services/supabase";
 import { Loader2, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
 function saveLocal(item: FeynmanItem) {
   const list = loadLocal();
