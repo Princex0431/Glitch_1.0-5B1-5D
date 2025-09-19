@@ -5,6 +5,8 @@ import Index from "@/pages/Index";
 import History from "@/pages/History";
 import Auth from "@/pages/Auth";
 import NotFound from "@/pages/NotFound";
+import About from "@/pages/About";
+import Contact from "@/pages/Contact";
 
 export default function AppRoutes() {
   return (
