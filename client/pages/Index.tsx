@@ -173,10 +173,14 @@ export default function Index() {
                 Tip: Try pasting a dense paragraph from a paper. We'll simplify
                 it.
               </div>
-              <Button type="submit" disabled={disabled}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Simplify
-              </Button>
+              <motion.div whileTap={{ scale: 0.98 }}>
+                <Button type="submit" disabled={disabled}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  <motion.span whileHover={{ scale: 1.03 }} transition={{ type: 'spring', stiffness: 300 }}>
+                    Simplify
+                  </motion.span>
+                </Button>
+              </motion.div>
             </div>
           </form>
         </CardContent>
