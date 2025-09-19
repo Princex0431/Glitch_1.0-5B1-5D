@@ -203,16 +203,21 @@ export default function Index() {
           <h2 className="text-xl font-semibold">Recent</h2>
           <Badge variant="secondary">{recent.length}</Badge>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recent.map((r) => (
-            <FeynmanCard key={r.id} item={r} />
-          ))}
+        <motion.div initial="hidden" animate="visible" variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.06 } }
+        }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {recent.length === 0 && (
             <p className="text-muted-foreground">
               No history yet. Start by simplifying your first concept.
             </p>
           )}
-        </div>
+          {recent.map((r) => (
+            <motion.div key={r.id} variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }}>
+              <FeynmanCard item={r} />
+            </motion.div>
+          ))}
+        </motion.div>
       </section>
     </div>
   );
