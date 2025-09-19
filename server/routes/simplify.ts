@@ -3,15 +3,30 @@ import axios from "axios";
 
 function parseModelText(data: any) {
   if (!data) return "";
-  if (Array.isArray(data.candidates) && data.candidates.length > 0) {
-    return data.candidates[0].content || data.candidates[0].output || "";
+  try {
+    // Common places where model text may appear
+    if (Array.isArray(data.candidates) && data.candidates.length > 0) {
+      const c = data.candidates[0];
+      if (typeof c.content === "string") return c.content;
+      if (typeof c.output === "string") return c.output;
+      if (typeof c.text === "string") return c.text;
+      if (Array.isArray(c.content) && c.content.length > 0 && typeof c.content[0].text === "string") return c.content[0].text;
+    }
+
+    if (Array.isArray(data.output) && data.output.length > 0) {
+      return data.output.map((o: any) => o.content || o.text || "").join("\n");
+    }
+
+    if (data?.outputText) return data.outputText;
+    if (typeof data.result === "string") return data.result;
+    if (typeof data.text === "string") return data.text;
+
+    // As a last resort, try to stringify any `content` or `result` fields
+    if (data?.candidates?.[0]) return JSON.stringify(data.candidates[0]).slice(0, 2000);
+    return JSON.stringify(data).slice(0, 2000);
+  } catch (e) {
+    return "";
   }
-  if (Array.isArray(data.output) && data.output.length > 0) {
-    return data.output.map((o: any) => o.content || o.text || "").join("\n");
-  }
-  if (typeof data.result === "string") return data.result;
-  if (typeof data.text === "string") return data.text;
-  return "";
 }
 
 function heuristicQuestions(text: string) {
