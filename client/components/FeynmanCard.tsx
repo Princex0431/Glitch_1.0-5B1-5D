@@ -94,12 +94,22 @@ export function FeynmanCard({ item }: { item: FeynmanItem }) {
 
   // Expose a bridge for the dynamically created info buttons to toggle inline definition
   useEffect(() => {
-    (window as any).__FEYNMAN_OPEN_DEF = (k: string) =>
+    (window as any).__FEYNMAN_OPEN_DEF = (k: string) => {
       setOpenInline((s) => (s === k ? null : k));
+      // load definition for this key on demand
+      loadDefinitions([k]);
+    };
     return () => {
       (window as any).__FEYNMAN_OPEN_DEF = undefined;
     };
   }, []);
+
+  // Load definitions when opening the dialog for the first time
+  useEffect(() => {
+    if (openDialog) {
+      loadDefinitions(words);
+    }
+  }, [openDialog]);
 
   return (
     <>
