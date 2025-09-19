@@ -59,6 +59,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <nav className="hidden md:flex items-center gap-6">
             <NavItem to="/" label="Home" />
             <NavItem to="/history" label="History" />
+            <NavItem to="/about" label="About" />
+            <NavItem to="/contact" label="Contact" />
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle />
