@@ -76,13 +76,21 @@ export default function Index() {
       let explanation = "";
       try {
         const { data } = await api.post("/simplify", { text: concept });
-        explanation = String(data?.explanation ?? "");
+        // prefer explicit explanation, fall back to modelText if present
+        explanation = String(data?.explanation ?? data?.modelText ?? "");
         // if server returned quiz, capture it
         var quizFromServer: any[] | undefined = Array.isArray(data?.quiz)
           ? data.quiz
           : undefined;
-      } catch {
+        if (!String(data?.explanation) && String(data?.modelText)) {
+          // inform the user we're showing the raw model output
+          const { toast } = await import("@/hooks/use-toast");
+          toast({ title: "Using model output", description: "Showing model-provided simplification text." });
+        }
+      } catch (err) {
         explanation = basicSimplify(concept);
+        const { toast } = await import("@/hooks/use-toast");
+        toast({ title: "Offline fallback", description: "Could not reach AI service, using local simplifier." });
       }
       const complex = findComplexWords(explanation || concept);
       const highlightedHtml = highlightComplexWords(
