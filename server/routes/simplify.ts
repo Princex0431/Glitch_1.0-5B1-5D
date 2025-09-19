@@ -194,6 +194,6 @@ Remember: JSON only. Example output schema:
         .slice(0, 3)
         .join(" ") || text;
     const quiz = heuristicQuestions(text);
-    res.json({ explanation, quiz });
+    res.json({ explanation, modelText: explanation, quiz });
   }
 };
