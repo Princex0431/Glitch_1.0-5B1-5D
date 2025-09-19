@@ -1,6 +1,10 @@
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-async function fetchWithTimeout(input: RequestInfo, init: RequestInit = {}, timeout = 8000) {
+async function fetchWithTimeout(
+  input: RequestInfo,
+  init: RequestInit = {},
+  timeout = 8000,
+) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
   try {
@@ -11,18 +15,24 @@ async function fetchWithTimeout(input: RequestInfo, init: RequestInit = {}, time
   }
 }
 
-export async function fetchDefinitions(words: string[]): Promise<Record<string, string>> {
+export async function fetchDefinitions(
+  words: string[],
+): Promise<Record<string, string>> {
   if (!words || words.length === 0) return {};
   const payload = { words };
   const maxRetries = 2;
   let attempt = 0;
   while (attempt <= maxRetries) {
     try {
-      const res = await fetchWithTimeout(`/api/define`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }, 8000);
+      const res = await fetchWithTimeout(
+        `/api/define`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+        8000,
+      );
 
       if (!res) return {};
       if (!res.ok) {
@@ -34,7 +44,9 @@ export async function fetchDefinitions(words: string[]): Promise<Record<string, 
       return data.definitions ?? {};
     } catch (err: any) {
       // Quietly handle network errors (avoid noisy stack traces in console)
-      console.debug(`fetchDefinitions attempt ${attempt} failed: ${String(err?.message ?? err)}`);
+      console.debug(
+        `fetchDefinitions attempt ${attempt} failed: ${String(err?.message ?? err)}`,
+      );
       attempt++;
       if (attempt > maxRetries) return {};
       await sleep(300 * attempt);
