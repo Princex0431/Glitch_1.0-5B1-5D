@@ -64,15 +64,21 @@ export const handleSimplify: RequestHandler = async (req, res) => {
       // 1) Simplify
       const simplePrompt = {
         prompt: {
-          text: `Please simplify the following text for a general audience. Keep the meaning but use short, clear sentences and plain words. Output only the simplified explanation. Text:\n\n"${text}"`,
+          text: `Please simplify the following text for a general audience. Keep the meaning but use short, clear sentences and plain words. Output ONLY the simplified explanation as plain text (no JSON, no extra commentary). Text:\n\n"${text}"`,
         },
         temperature: 0.2,
         maxOutputTokens: 512,
       };
 
-      const resp1 = await axios.post(url, simplePrompt, { timeout: 20000 });
-      const modelText = parseModelText(resp1.data) || "";
-      explanation = modelText;
+      let ai_error: string | null = null;
+      try {
+        const resp1 = await axios.post(url, simplePrompt, { timeout: 20000 });
+        const modelText = parseModelText(resp1.data) || "";
+        explanation = modelText;
+      } catch (e: any) {
+        ai_error = `AI simplification failed: ${e?.response?.data ?? e.message ?? String(e)}`;
+        explanation = "";
+      }
 
       // 2) Generate quiz questions (JSON)
       // Stronger prompt: require JSON only, unique options, plausible distractors
