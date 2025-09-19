@@ -88,6 +88,8 @@ export const handleSimplify: RequestHandler = async (req, res) => {
       let ai_error: string | null = null;
       try {
         const resp1 = await axios.post(url, simplePrompt, { timeout: 20000 });
+        // debug log raw model response (trim to avoid huge logs)
+        try { console.debug('MODEL_RESP_SIMPLIFY', JSON.stringify(resp1.data).slice(0,3000)); } catch(e) {}
         const modelText = parseModelText(resp1.data) || "";
         explanation = modelText;
         if (!modelText) {
