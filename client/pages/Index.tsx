@@ -1,62 +1,170 @@
-import { DemoResponse } from "@shared/api";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { api } from "@/services/axios";
+import { basicSimplify, findComplexWords, highlightComplexWords } from "@/lib/highlightWords";
+import { FeynmanCard, FeynmanItem } from "@/components/FeynmanCard";
+import { isSupabaseEnabled, supabase } from "@/services/supabase";
+import { Loader2, Sparkles } from "lucide-react";
+
+function saveLocal(item: FeynmanItem) {
+  const list = loadLocal();
+  list.unshift(item);
+  localStorage.setItem("feynman_history", JSON.stringify(list.slice(0, 100)));
+}
+function loadLocal(): FeynmanItem[] {
+  try {
+    const raw = localStorage.getItem("feynman_history");
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
 
 export default function Index() {
-  const [exampleFromServer, setExampleFromServer] = useState("");
-  // Fetch users on component mount
+  const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<FeynmanItem | null>(null);
+  const [recent, setRecent] = useState<FeynmanItem[]>(loadLocal());
+
   useEffect(() => {
-    fetchDemo();
+    // Prefetch recent history from Supabase if available
+    const fetchRemote = async () => {
+      if (!isSupabaseEnabled || !supabase) return;
+      const { data, error } = await supabase
+        .from("concepts")
+        .select("id, concept, explanation, highlightedHtml, createdAt")
+        .order("createdAt", { ascending: false })
+        .limit(6);
+      if (!error && data) {
+        setRecent(
+          data.map((d: any) => ({
+            id: d.id,
+            concept: d.concept,
+            explanation: d.explanation,
+            highlightedHtml: d.highlightedHtml,
+            createdAt: d.createdAt,
+          })),
+        );
+      }
+    };
+    fetchRemote();
   }, []);
 
-  // Example of how to fetch data from the server (if needed)
-  const fetchDemo = async () => {
+  const disabled = text.trim().length < 8 || loading;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (disabled) return;
+    setLoading(true);
     try {
-      const response = await fetch("/api/demo");
-      const data = (await response.json()) as DemoResponse;
-      setExampleFromServer(data.message);
-    } catch (error) {
-      console.error("Error fetching hello:", error);
+      const concept = text.trim();
+      let explanation = "";
+      try {
+        const { data } = await api.post("/simplify", { text: concept });
+        explanation = String(data?.explanation ?? "");
+      } catch {
+        explanation = basicSimplify(concept);
+      }
+      const complex = findComplexWords(explanation || concept);
+      const highlightedHtml = highlightComplexWords(explanation || concept, complex);
+      const item: FeynmanItem = {
+        id: crypto.randomUUID(),
+        concept,
+        explanation: explanation || concept,
+        highlightedHtml,
+        createdAt: new Date().toISOString(),
+      };
+      setResult(item);
+      setRecent((prev) => [item, ...prev].slice(0, 6));
+      if (isSupabaseEnabled && supabase) {
+        const { error } = await supabase.from("concepts").insert({
+          id: item.id,
+          concept: item.concept,
+          explanation: item.explanation,
+          highlightedHtml: item.highlightedHtml,
+          createdAt: item.createdAt,
+        });
+        if (error) saveLocal(item);
+      } else {
+        saveLocal(item);
+      }
+      setText("");
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-      <div className="text-center">
-        {/* TODO: FUSION_GENERATION_APP_PLACEHOLDER replace everything here with the actual app! */}
-        <h1 className="text-2xl font-semibold text-slate-800 flex items-center justify-center gap-3">
-          <svg
-            className="animate-spin h-8 w-8 text-slate-400"
-            viewBox="0 0 50 50"
-          >
-            <circle
-              className="opacity-30"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-            />
-            <circle
-              className="text-slate-600"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-              strokeDasharray="100"
-              strokeDashoffset="75"
-            />
-          </svg>
-          Generating your app...
+  const hero = useMemo(
+    () => (
+      <div className="text-center space-y-4">
+        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1 text-xs text-muted-foreground">
+          <Sparkles className="h-3.5 w-3.5 text-primary" />
+          Learn faster with the Feynman Technique
+        </div>
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">
+          Explain anything in simple words
         </h1>
-        <p className="mt-4 text-slate-600 max-w-md">
-          Watch the chat on the left for updates that might need your attention
-          to finish generating
+        <p className="text-muted-foreground max-w-2xl mx-auto">
+          Paste a concept. We rewrite it in plain language and highlight tricky words. Save and revisit your learning history anywhere.
         </p>
-        <p className="mt-4 hidden max-w-md">{exampleFromServer}</p>
       </div>
+    ),
+    [],
+  );
+
+  return (
+    <div className="space-y-10">
+      {hero}
+      <Card>
+        <CardHeader>
+          <CardTitle>Break it down</CardTitle>
+          <CardDescription>Paste a concept and get a simpler explanation with highlighted complex words.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Textarea
+              placeholder="Paste complex text or describe a concept..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              className="min-h-[140px] text-base"
+            />
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-xs text-muted-foreground">
+                Tip: Try pasting a dense paragraph from a paper. We'll simplify it.
+              </div>
+              <Button type="submit" disabled={disabled}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Simplify
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {result && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Latest explanation</h2>
+          <FeynmanCard item={result} />
+        </div>
+      )}
+
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Recent</h2>
+          <Badge variant="secondary">{recent.length}</Badge>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {recent.map((r) => (
+            <FeynmanCard key={r.id} item={r} />
+          ))}
+          {recent.length === 0 && (
+            <p className="text-muted-foreground">No history yet. Start by simplifying your first concept.</p>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
