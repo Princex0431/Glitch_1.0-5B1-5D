@@ -90,8 +90,11 @@ export const handleSimplify: RequestHandler = async (req, res) => {
         const resp1 = await axios.post(url, simplePrompt, { timeout: 20000 });
         const modelText = parseModelText(resp1.data) || "";
         explanation = modelText;
+        if (!modelText) {
+          ai_error = `AI simplification returned unexpected response: ${JSON.stringify(resp1.data).slice(0,2000)}`;
+        }
       } catch (e: any) {
-        ai_error = `AI simplification failed: ${e?.response?.data ?? e.message ?? String(e)}`;
+        ai_error = `AI simplification failed: ${JSON.stringify(e?.response?.data ?? e.message ?? String(e)).slice(0,2000)}`;
         explanation = "";
       }
 
