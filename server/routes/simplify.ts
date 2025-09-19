@@ -187,7 +187,9 @@ Remember: JSON only. Example output schema:
     }
 
     // return explanation and quiz and modelText for debugging/fallback
-    res.json({ explanation, modelText: explanation, quiz: quiz.slice(0, 10) });
+    const respPayload: any = { explanation, modelText: explanation, quiz: quiz.slice(0, 10) };
+    if (typeof ai_error !== "undefined" && ai_error) respPayload.ai_error = ai_error;
+    res.json(respPayload);
   } catch (err: any) {
     console.error(
       "Gemini API error:",
