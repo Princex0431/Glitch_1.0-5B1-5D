@@ -174,7 +174,7 @@ export default function Index() {
           <FeynmanCard item={result} />
           {result.quiz && result.quiz.length > 0 && (
             <div className="mt-4">
-              <Quiz quiz={result.quiz} />
+              <Quiz quiz={result.quiz} conceptId={result.id} />
             </div>
           )}
         </div>
